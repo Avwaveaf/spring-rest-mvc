@@ -58,7 +58,7 @@ class CustomerControllerTest {
         given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
 
         /// When
-        mockMvc.perform(get("/customer/" + testCustomer.getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + testCustomer.getId()).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -73,7 +73,7 @@ class CustomerControllerTest {
         int listSize = customerServiceImpl.listCustomers().size();
 
         ///  When
-        mockMvc.perform(get("/customer").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ class CustomerControllerTest {
         given(customerService.saveNewCustomer(any(Customer.class))).willReturn(customerServiceImpl.listCustomers().get(1));
 
         /// When
-        mockMvc.perform(post("/customer")
+        mockMvc.perform(post(CustomerController.CUSTOMER_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(cust))
@@ -109,7 +109,7 @@ class CustomerControllerTest {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
         /// When
-        mockMvc.perform(put("/customer/" + customer.getId())
+        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customer))
@@ -127,7 +127,7 @@ class CustomerControllerTest {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
         /// When
-        mockMvc.perform(delete("/customer/" + customer.getId()))
+        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + customer.getId()))
                 /// Then
                 .andExpect(status().isNoContent());
 
@@ -144,7 +144,7 @@ class CustomerControllerTest {
         patchMap.put("customerName", "New Customer Name");
 
         /// When
-        mockMvc.perform(patch("/customer/" + customer.getId())
+        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(patchMap))

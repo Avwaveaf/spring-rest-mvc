@@ -32,11 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
 
+
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper objectMapper; // jackson object mapper to compose a json object
+    ObjectMapper objectMapper;
 
     @MockitoBean
     BeerService beerService;
@@ -61,7 +62,7 @@ class BeerControllerTest {
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
         /// When
-        mockMvc.perform(get("/beer/" + testBeer.getId())
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
@@ -77,7 +78,7 @@ class BeerControllerTest {
         int listSize = beerServiceImpl.listBeers().size();
 
         /// When
-        mockMvc.perform(get("/beer").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -96,7 +97,7 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         /// When
-        mockMvc.perform(post("/beer")
+        mockMvc.perform(post(CustomerController.CUSTOMER_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
@@ -112,7 +113,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         /// When
-        mockMvc.perform(put("/beer/" + beer.getId())
+        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
@@ -129,7 +130,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         /// When
-        mockMvc.perform(delete("/beer/" + beer.getId())
+        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 /// Then
@@ -149,7 +150,7 @@ class BeerControllerTest {
         // we want to patch beerName only
         beerMap.put("beerName", "New Beer Name");
         /// When
-        mockMvc.perform(patch("/beer/" + beer.getId())
+        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap))

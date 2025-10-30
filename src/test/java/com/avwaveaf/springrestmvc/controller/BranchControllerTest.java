@@ -57,7 +57,7 @@ class BranchControllerTest {
         given(branchService.getBranchById(testBranch.getId())).willReturn(testBranch);
 
         /// When
-        mockMvc.perform(get("/branch/" + testBranch.getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(BranchController.BRANCH_BASE_URL + testBranch.getId()).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -72,7 +72,7 @@ class BranchControllerTest {
         int listSize = branchServiceImpl.listBranches().size();
 
         /// When
-        mockMvc.perform(get("/branch").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(BranchController.BRANCH_BASE_URL).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(listSize)));
@@ -89,7 +89,7 @@ class BranchControllerTest {
         given(branchService.saveNewBranch(any(Branch.class))).willReturn(branchServiceImpl.listBranches().get(1));
 
         /// When
-        mockMvc.perform(post("/branch")
+        mockMvc.perform(post(BranchController.BRANCH_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(branch))
@@ -105,7 +105,7 @@ class BranchControllerTest {
         Branch branch = branchServiceImpl.listBranches().get(0);
 
         /// When
-        mockMvc.perform(put("/branch/" + branch.getId())
+        mockMvc.perform(put(BranchController.BRANCH_BASE_URL + branch.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(branch))
@@ -122,7 +122,7 @@ class BranchControllerTest {
         Branch branch = branchServiceImpl.listBranches().get(0);
 
         /// When
-        mockMvc.perform(delete("/branch/" + branch.getId())
+        mockMvc.perform(delete(BranchController.BRANCH_BASE_URL + branch.getId())
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 /// Then
@@ -141,7 +141,7 @@ class BranchControllerTest {
         branchMap.put("branchName", "New Branch Name");
 
         /// When
-        mockMvc.perform(patch("/branch/" + branch.getId())
+        mockMvc.perform(patch(BranchController.BRANCH_BASE_URL + branch.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(branchMap))

@@ -2,7 +2,6 @@ package com.avwaveaf.springrestmvc.controller;
 
 import com.avwaveaf.springrestmvc.model.customer.Customer;
 import com.avwaveaf.springrestmvc.service.CustomerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,28 +16,31 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomerController {
+    public static final String CUSTOMER_BASE_URL = "/customer/";
+    public static final String CUSTOMER_ID_URL = "/customer/{customerId}";
+
     private final CustomerService customerService;
 
-    @PatchMapping("/customer/{id}")
+    @PatchMapping(CUSTOMER_ID_URL)
     public ResponseEntity patchUpdateCustomerById(
-            @PathVariable UUID id,
+            @PathVariable UUID customerId,
             @RequestBody Customer customer
-    ){
+    ) {
 
-        customerService.patchUpdateById(id, customer);
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping("/customer/{id}")
-    public ResponseEntity deleteById(@PathVariable UUID id){
-
-        customerService.deleteCustomerById(id);
+        customerService.patchUpdateById(customerId, customer);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/customer/{customerId}")
+    @DeleteMapping(CUSTOMER_ID_URL)
+    public ResponseEntity deleteById(@PathVariable UUID customerId) {
+
+        customerService.deleteCustomerById(customerId);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(CUSTOMER_ID_URL)
     public ResponseEntity updateCustomerById(
             @PathVariable("customerId") UUID id,
             @RequestBody Customer customer
@@ -51,7 +53,7 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/customer")
+    @PostMapping(CUSTOMER_BASE_URL)
     public ResponseEntity createNewCustomer(@RequestBody Customer customer) {
         Customer saved = customerService.saveNewCustomer(customer);
 
@@ -61,13 +63,13 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping("/customer")
+    @RequestMapping(CUSTOMER_BASE_URL)
     public List<Customer> listCustomers() {
         log.debug("Getting list of customers (Controller)");
         return customerService.listCustomers();
     }
 
-    @RequestMapping("/customer/{customerId}")
+    @RequestMapping(CUSTOMER_ID_URL)
     public Customer getCustomerById(@PathVariable UUID customerId) {
         log.debug("Getting customer by id (Controller): {}", customerId);
         return customerService.getCustomerById(customerId);

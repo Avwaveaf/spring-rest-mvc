@@ -16,25 +16,27 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 public class BranchController {
+    public static final String BRANCH_BASE_URL = "/branch/";
+    public static final String BRANCH_ID_URL = "/branch/{branchId}";
     private final BranchService branchService;
 
-    @GetMapping("/branch")
+    @GetMapping(BRANCH_BASE_URL)
     public List<Branch> getListBranches() {
         return branchService.listBranches();
     }
 
-    @GetMapping("/branch/{id}")
-    public Branch getBranchById(@PathVariable UUID id) {
-        return branchService.getBranchById(id);
+    @GetMapping(BRANCH_ID_URL)
+    public Branch getBranchById(@PathVariable UUID branchId) {
+        return branchService.getBranchById(branchId);
     }
 
-    @DeleteMapping("/branch/{id}")
-    public ResponseEntity deleteById(@PathVariable UUID id) {
-        branchService.deleteBranchById(id);
+    @DeleteMapping(BRANCH_ID_URL)
+    public ResponseEntity deleteById(@PathVariable UUID branchId) {
+        branchService.deleteBranchById(branchId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/branch")
+    @PostMapping(BRANCH_BASE_URL)
     public ResponseEntity saveNewBranch(@RequestBody Branch branch) {
         Branch saved = branchService.saveNewBranch(branch);
 
@@ -44,25 +46,25 @@ public class BranchController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/branch/{id}")
+    @PutMapping(BRANCH_ID_URL)
     public ResponseEntity putUpdateById(
-            @PathVariable UUID id,
+            @PathVariable UUID branchId,
             @RequestBody Branch branch
     ) {
-        branchService.updateById(id, branch);
+        branchService.updateById(branchId, branch);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/branch/" + id.toString());
+        headers.add("Location", "/api/v1/branch/" + branchId.toString());
 
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/branch/{id}")
+    @PatchMapping(BRANCH_ID_URL)
     public ResponseEntity patchUpdateById(
-            @PathVariable UUID id,
+            @PathVariable UUID branchId,
             @RequestBody Branch branch
     ) {
-        branchService.patchBranchById(id, branch);
+        branchService.patchBranchById(branchId, branch);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
