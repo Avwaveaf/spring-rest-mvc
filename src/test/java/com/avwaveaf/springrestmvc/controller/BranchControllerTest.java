@@ -1,8 +1,8 @@
 package com.avwaveaf.springrestmvc.controller;
 
-import com.avwaveaf.springrestmvc.model.beer.Beer;
-import com.avwaveaf.springrestmvc.service.BeerService;
-import com.avwaveaf.springrestmvc.service.BeerServiceImpl;
+import com.avwaveaf.springrestmvc.model.branch.Branch;
+import com.avwaveaf.springrestmvc.service.BranchService;
+import com.avwaveaf.springrestmvc.service.BranchServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,47 +15,43 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//@SpringBootTest
-
-/// Bring up the context that spring provide
-@WebMvcTest(BeerController.class)
-class BeerControllerTest {
+@WebMvcTest(BranchController.class)
+class BranchControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @MockitoBean
-    BeerService beerService;
+    BranchService branchService;
 
-    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    BranchServiceImpl branchServiceImpl = new BranchServiceImpl();
 
     @Test
-    void getBeerById() throws Exception {
+    void getBranchById() throws Exception {
         /// Given
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
-        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
+        Branch testBranch = branchServiceImpl.listBranches().get(0);
+        given(branchService.getBranchById(testBranch.getId())).willReturn(testBranch);
 
         /// When
-        mockMvc.perform(get("/beer/" + testBeer.getId())
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/branch/" + testBranch.getId()).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
-                .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
+                .andExpect(jsonPath("$.id", is(testBranch.getId().toString())))
+                .andExpect(jsonPath("$.branchName", is(testBranch.getBranchName())));
     }
 
     @Test
-    void getListBeer() throws Exception {
+    void getBranches() throws Exception {
         /// Given
-        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
-        int listSize = beerServiceImpl.listBeers().size();
+        given(branchService.listBranches()).willReturn(branchServiceImpl.listBranches());
+        int listSize = branchServiceImpl.listBranches().size();
 
         /// When
-        mockMvc.perform(get("/beer").accept(MediaType.APPLICATION_JSON))
-                /// Then
+        mockMvc.perform(get("/branch").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(listSize)));
     }
+
 }
