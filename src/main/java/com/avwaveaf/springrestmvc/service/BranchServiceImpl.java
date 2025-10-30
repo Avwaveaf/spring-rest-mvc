@@ -3,6 +3,7 @@ package com.avwaveaf.springrestmvc.service;
 import com.avwaveaf.springrestmvc.model.branch.Branch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -243,5 +244,27 @@ public class BranchServiceImpl implements BranchService {
     @Override
     public void deleteBranchById(UUID id) {
         branchMap.remove(id);
+    }
+
+    @Override
+    public void patchBranchById(UUID id, Branch branch) {
+        Branch existing = branchMap.get(id);
+        if (existing == null) {
+            return;
+        }
+        if (StringUtils.hasText(branch.getBranchName())) {
+            existing.setBranchName(branch.getBranchName());
+        }
+        if (StringUtils.hasText(branch.getAddress())) {
+            existing.setAddress(branch.getAddress());
+        }
+        if (StringUtils.hasText(branch.getPhoneNumber())) {
+            existing.setPhoneNumber(branch.getPhoneNumber());
+        }
+        if (StringUtils.hasText(branch.getEmail())) {
+            existing.setEmail(branch.getEmail());
+        }
+        existing.setUpdatedDate(LocalDateTime.now());
+        branchMap.put(id, existing);
     }
 }

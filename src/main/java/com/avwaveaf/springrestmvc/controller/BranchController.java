@@ -28,7 +28,7 @@ public class BranchController {
         return branchService.getBranchById(id);
     }
 
-    @GetMapping("/branch/delete/{id}")
+    @DeleteMapping("/branch/{id}")
     public ResponseEntity deleteById(@PathVariable UUID id) {
         branchService.deleteBranchById(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -55,6 +55,15 @@ public class BranchController {
         headers.add("Location", "/api/v1/branch/" + id.toString());
 
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/branch/{id}")
+    public ResponseEntity patchUpdateById(
+            @PathVariable UUID id,
+            @RequestBody Branch branch
+    ) {
+        branchService.patchBranchById(id, branch);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -3,21 +3,27 @@ package com.avwaveaf.springrestmvc.controller;
 import com.avwaveaf.springrestmvc.model.beer.Beer;
 import com.avwaveaf.springrestmvc.service.BeerService;
 import com.avwaveaf.springrestmvc.service.BeerServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //@SpringBootTest
@@ -34,6 +40,11 @@ class BeerControllerTest {
 
     @MockitoBean
     BeerService beerService;
+    @Captor
+    ArgumentCaptor<UUID> acUUID;
+    @Captor
+    ArgumentCaptor<Beer> acBeer;
+
 
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
 
@@ -93,5 +104,60 @@ class BeerControllerTest {
                 /// Then
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    void updateBeer() throws Exception {
+        /// Given
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        /// When
+        mockMvc.perform(put("/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer))
+                )
+                .andExpect(status().isNoContent());
+
+        /// Then
+        verify(beerService).updateByBeerId(any(UUID.class), any(Beer.class));
+    }
+
+    @Test
+    void deleteBeer() throws Exception {
+        /// Given
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        /// When
+        mockMvc.perform(delete("/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                /// Then
+                .andExpect(status().isNoContent());
+
+        /// Then
+        verify(beerService).deleteBeerById(acUUID.capture());
+        assertThat(beer.getId()).isEqualTo(acUUID.getValue());
+    }
+
+    @Test
+    void patchBeer() throws Exception {
+        /// Given
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        Map<String, Object> beerMap = new HashMap<>();
+        // we want to patch beerName only
+        beerMap.put("beerName", "New Beer Name");
+        /// When
+        mockMvc.perform(patch("/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap))
+                )
+                .andExpect(status().isNoContent());
+
+        /// Then
+        verify(beerService).patchBeerById(acUUID.capture(), acBeer.capture());
+        assertThat(beerMap.get("beerName")).isEqualTo(acBeer.getValue().getBeerName());
     }
 }

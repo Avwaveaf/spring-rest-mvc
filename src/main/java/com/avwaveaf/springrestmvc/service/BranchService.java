@@ -15,4 +15,6 @@ public interface BranchService {
     void updateById(UUID id, Branch branch);
 
     void deleteBranchById(UUID id);
+
+    void patchBranchById(UUID id, Branch branch);
 }
