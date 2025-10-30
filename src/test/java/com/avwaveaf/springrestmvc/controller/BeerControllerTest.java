@@ -62,7 +62,7 @@ class BeerControllerTest {
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
         /// When
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + testBeer.getId())
+        mockMvc.perform(get(BeerController.BEER_BASE_URL + testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
@@ -78,7 +78,7 @@ class BeerControllerTest {
         int listSize = beerServiceImpl.listBeers().size();
 
         /// When
-        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(BeerController.BEER_BASE_URL).accept(MediaType.APPLICATION_JSON))
                 /// Then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -97,7 +97,7 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         /// When
-        mockMvc.perform(post(CustomerController.CUSTOMER_BASE_URL)
+        mockMvc.perform(post(BeerController.BEER_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
@@ -113,7 +113,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         /// When
-        mockMvc.perform(put(CustomerController.CUSTOMER_BASE_URL + beer.getId())
+        mockMvc.perform(put(BeerController.BEER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
@@ -130,7 +130,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         /// When
-        mockMvc.perform(delete(CustomerController.CUSTOMER_BASE_URL + beer.getId())
+        mockMvc.perform(delete(BeerController.BEER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 /// Then
@@ -150,7 +150,7 @@ class BeerControllerTest {
         // we want to patch beerName only
         beerMap.put("beerName", "New Beer Name");
         /// When
-        mockMvc.perform(patch(CustomerController.CUSTOMER_BASE_URL + beer.getId())
+        mockMvc.perform(patch(BeerController.BEER_BASE_URL + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap))
