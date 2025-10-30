@@ -2,8 +2,10 @@ package com.avwaveaf.springrestmvc.controller;
 
 import com.avwaveaf.springrestmvc.model.beer.Beer;
 import com.avwaveaf.springrestmvc.service.BeerService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +23,25 @@ public class BeerController {
     private final BeerService beerService;
 
     @PatchMapping(BEER_ID_URL)
-    public ResponseEntity<Void> updateBeerByIdPatch(
+    public ResponseEntity updateBeerByIdPatch(
             @PathVariable UUID beerId,
             @RequestBody Beer beer
     ) {
         beerService.patchBeerById(beerId, beer);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(BEER_ID_URL)
-    public ResponseEntity<Void> deleteById(@PathVariable UUID beerId) {
+    public ResponseEntity deleteById(@PathVariable UUID beerId) {
 
         beerService.deleteBeerById(beerId);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(BEER_ID_URL)
-    public ResponseEntity<Void> updateById(
+    public ResponseEntity updateById(
             @PathVariable UUID beerId,
             @RequestBody Beer beer
     ) {
@@ -48,20 +50,17 @@ public class BeerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + beerId.toString());
 
-        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+        return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(BEER_BASE_URL)
-    public ResponseEntity<Beer> handlePost(@RequestBody Beer beer) {
+    public ResponseEntity handlePost(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveNewBeer(beer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + savedBeer.getId().toString());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .headers(headers)
-                .body(savedBeer);
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = BEER_BASE_URL, method = RequestMethod.GET)
