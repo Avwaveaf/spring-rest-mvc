@@ -16,6 +16,7 @@ public class Branch {
     private String address;
     private String phoneNumber;
     private String email;
+    private Integer version;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 }
