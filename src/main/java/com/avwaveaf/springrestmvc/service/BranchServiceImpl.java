@@ -207,9 +207,9 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public Branch getBranchById(UUID id) {
+    public Optional<Branch> getBranchById(UUID id) {
         log.debug("Requested branch by id (Service): {}", id);
-        return branchMap.get(id);
+        return Optional.of(branchMap.get(id));
     }
 
     @Override

@@ -1,8 +1,10 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.branch.Branch;
 import com.avwaveaf.springrestmvc.service.BranchService;
 import com.avwaveaf.springrestmvc.service.BranchServiceImpl;
+import com.avwaveaf.springrestmvc.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +58,7 @@ class BranchControllerTest {
     void getBranchById() throws Exception {
         /// Given
         Branch testBranch = branchServiceImpl.listBranches().get(0);
-        given(branchService.getBranchById(testBranch.getId())).willReturn(testBranch);
+        given(branchService.getBranchById(testBranch.getId())).willReturn(Optional.of(testBranch));
 
         /// When
         mockMvc.perform(get(BranchController.BRANCH_BASE_URL + testBranch.getId()).accept(MediaType.APPLICATION_JSON))
@@ -151,6 +155,18 @@ class BranchControllerTest {
         /// Then
         verify(branchService).patchBranchById(acUUID.capture(), acBranch.capture());
         assertThat(branchMap.get("branchName")).isEqualTo(acBranch.getValue().getBranchName());
+    }
+
+    /// =========== EXCEPTION ===========
+    @Test
+    void branchByIdNotFound() throws Exception {
+        /// Given
+        given(branchService.getBranchById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        /// When
+        mockMvc.perform(get(BranchController.BRANCH_BASE_URL + UUID.randomUUID()))
+                /// Then
+                .andExpect(status().isNotFound());
     }
 
 }

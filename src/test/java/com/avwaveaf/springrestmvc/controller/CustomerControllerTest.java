@@ -1,5 +1,6 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.customer.Customer;
 import com.avwaveaf.springrestmvc.service.CustomerService;
 import com.avwaveaf.springrestmvc.service.CustomerServiceImpl;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +57,7 @@ class CustomerControllerTest {
     void getCustomerById() throws Exception {
         /// Given
         Customer testCustomer = customerServiceImpl.listCustomers().get(0);
-        given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
+        given(customerService.getCustomerById(testCustomer.getId())).willReturn(Optional.of(testCustomer));
 
         /// When
         mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + testCustomer.getId()).accept(MediaType.APPLICATION_JSON))
@@ -154,6 +156,19 @@ class CustomerControllerTest {
         /// Then
         verify(customerService).patchUpdateById(acUUID.capture(), acCustomer.capture());
         assertThat(patchMap.get("customerName")).isEqualTo(acCustomer.getValue().getCustomerName());
+    }
+
+    /// =========== EXCEPTION ===========
+
+    @Test
+    void customerByIdNotFound() throws Exception {
+        /// Given
+        given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        /// When
+        mockMvc.perform(get(CustomerController.CUSTOMER_BASE_URL + UUID.randomUUID()))
+                /// Then
+                .andExpect(status().isNotFound());
     }
 
 }

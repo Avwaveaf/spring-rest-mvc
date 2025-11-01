@@ -1,5 +1,6 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.customer.Customer;
 import com.avwaveaf.springrestmvc.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +73,6 @@ public class CustomerController {
     @RequestMapping(CUSTOMER_ID_URL)
     public Customer getCustomerById(@PathVariable UUID customerId) {
         log.debug("Getting customer by id (Controller): {}", customerId);
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 }

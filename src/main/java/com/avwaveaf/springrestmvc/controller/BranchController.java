@@ -1,5 +1,6 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.branch.Branch;
 import com.avwaveaf.springrestmvc.service.BranchService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class BranchController {
 
     @GetMapping(BRANCH_ID_URL)
     public Branch getBranchById(@PathVariable UUID branchId) {
-        return branchService.getBranchById(branchId);
+        return branchService.getBranchById(branchId).orElseThrow(NotFoundException::new);
     }
 
     @DeleteMapping(BRANCH_ID_URL)

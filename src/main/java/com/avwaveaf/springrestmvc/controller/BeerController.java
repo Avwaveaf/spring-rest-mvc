@@ -1,11 +1,10 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.beer.Beer;
 import com.avwaveaf.springrestmvc.service.BeerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +71,6 @@ public class BeerController {
     @RequestMapping(value = BEER_ID_URL, method = RequestMethod.GET)
     public Beer getBeerById(@PathVariable("beerId") UUID id) {
         log.debug("Getting beer by id (Controller): {}", id);
-        return beerService.getBeerById(id);
+        return beerService.getBeerById(id).orElseThrow(NotFoundException::new);
     }
 }

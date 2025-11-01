@@ -1,5 +1,6 @@
 package com.avwaveaf.springrestmvc.controller;
 
+import com.avwaveaf.springrestmvc.controller.exception.NotFoundException;
 import com.avwaveaf.springrestmvc.model.beer.Beer;
 import com.avwaveaf.springrestmvc.service.BeerService;
 import com.avwaveaf.springrestmvc.service.BeerServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +61,7 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         /// Given
         Beer testBeer = beerServiceImpl.listBeers().get(0);
-        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
+        given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));
 
         /// When
         mockMvc.perform(get(BeerController.BEER_BASE_URL + testBeer.getId())
@@ -161,4 +163,18 @@ class BeerControllerTest {
         verify(beerService).patchBeerById(acUUID.capture(), acBeer.capture());
         assertThat(beerMap.get("beerName")).isEqualTo(acBeer.getValue().getBeerName());
     }
+
+    /// =========== EXCEPTION ===========
+
+    @Test
+    void beerByIdNotFound() throws Exception {
+        /// Given
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
+
+        /// When
+        mockMvc.perform(get(BeerController.BEER_BASE_URL +  UUID.randomUUID()))
+                /// Then
+                .andExpect(status().isNotFound());
+    }
+
 }
